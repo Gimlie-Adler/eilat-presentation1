@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מטה משפחות החטופים – אילת | סיכום פעילות</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* ===== MAIN STAGE ===== */
+    #stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* ===== SLIDE BASE ===== */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+      pointer-events: none;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ===== COVER SLIDE ===== */
+    .slide-cover {
+      background: #000;
+      flex-direction: column;
+      gap: 28px;
+      text-align: center;
+    }
+    .slide-cover .logo-wrap {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 40px;
+      box-shadow: 0 0 60px rgba(240,192,64,0.4);
+      animation: glow 3s ease-in-out infinite;
+    }
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 40px rgba(240,192,64,0.3); }
+      50%      { box-shadow: 0 0 80px rgba(240,192,64,0.7); }
+    }
+    .slide-cover .logo {
+      width: min(400px, 70vw);
+      display: block;
+    }
+    .slide-cover .subtitle {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: #f0c040;
+      letter-spacing: 0.06em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+    }
+    .slide-cover .start-hint {
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      color: rgba(255,255,255,0.6);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 0.3; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ===== SECTION TITLE SLIDE ===== */
+    .slide-section-title {
+      background: #000;
+      flex-direction: column;
+      gap: 18px;
+      text-align: center;
+    }
+    .slide-section-title .sec-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      filter: none;
+      transform: scale(1.0);
+    }
+    .slide-section-title .sec-name {
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 4px 40px rgba(0,0,0,1);
+      position: relative;
+      z-index: 1;
+      line-height: 1.1;
+      padding: 0 40px;
+    }
+    .slide-section-title .sec-line {
+      width: 150px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #f0c040, transparent);
+      position: relative;
+      z-index: 1;
+    }
+    .slide-section-title .logo-corner {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      width: 100px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      opacity: 0.9;
+      z-index: 1;
+    }
+
+    /* ===== PHOTO SLIDE ===== */
+    .slide-photo {
+      background: #000;
+    }
+    .slide-photo .photo-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.2);
+    }
+    .slide-photo .photo-main {
+      position: relative;
+      z-index: 1;
+      max-width: 94vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 10px 80px rgba(0,0,0,1);
+      animation: kenburns 6s ease-out forwards;
+    }
+    @keyframes kenburns {
+      from { transform: scale(1.04); }
+      to   { transform: scale(1.0); }
+    }
+    .slide-photo .badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 2;
+      background: rgba(0,0,0,0.8);
+      border: 1.5px solid rgba(240,192,64,0.8);
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      font-weight: bold;
+      color: #f0c040;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+    .slide-photo .logo-corner {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 70px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px;
+      opacity: 0.7;
+      z-index: 2;
+    }
+
+    /* ===== END SLIDE ===== */
+    .slide-end {
+      background: #000;
+      flex-direction: column;
+      gap: 22px;
+      text-align: center;
+    }
+    .slide-end .end-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+      filter: none;
+    }
+    .slide-end .ribbon-img {
+      width: min(150px, 30vw);
+      position: relative;
+      z-index: 1;
+      animation: sway 2.5s ease-in-out infinite;
+    }
+    @keyframes sway {
+      0%,100% { transform: rotate(-4deg); }
+      50%      { transform: rotate(4deg); }
+    }
+    .slide-end .end-logo-wrap {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .slide-end .end-logo {
+      width: min(280px, 55vw);
+      display: block;
+    }
+    .slide-end .end-title {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 900;
+      color: #f0c040;
+      text-shadow: 0 2px 20px rgba(0,0,0,1);
+      position: relative;
+      z-index: 1;
+    }
+    .slide-end .end-sub {
+      font-size: clamp(0.9rem, 2vw, 1.3rem);
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    /* ===== CREDITS SLIDE ===== */
+    .slide-credits {
+      background: #000;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+    }
+    .slide-credits .credit-main-img {
+      max-width: 85vw;
+      max-height: 45vh;
+      border: 2px solid #f0c040;
+      border-radius: 10px;
+      box-shadow: 0 0 40px rgba(240,192,64,0.4);
+    }
+    .slide-credits .credits-title {
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      color: #f0c040;
+      font-weight: bold;
+    }
+    .slide-credits .credits-list {
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: #fff;
+      line-height: 1.6;
+    }
+    .slide-credits .credits-list span {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    #progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #f0c040, #ff8800);
+      z-index: 100;
+      box-shadow: 0 0 10px rgba(240,192,64,0.8);
+      pointer-events: none;
+    }
+
+    /* ===== SECTION DOTS ===== */
+    #sec-dots {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .sec-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      transition: background 0.4s, transform 0.4s;
+      cursor: pointer;
+    }
+    .sec-dot.active {
+      background: #f0c040;
+      transform: scale(1.5);
+    }
+    .sec-dot:hover { background: rgba(240,192,64,0.6); }
+
+    /* ===== CONTROLS ===== */
+    #controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 40px;
+      padding: 8px 22px;
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      transition: opacity 0.4s;
+      direction: ltr;
+    }
+    #controls:hover, #controls.visible { opacity: 1; }
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      line-height: 1;
+    }
+    .ctrl-btn:hover { color: #f0c040; background: rgba(255,255,255,0.1); }
+    #slide-counter {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      min-width: 60px;
+      text-align: center;
+    }
+    #music-btn { font-size: 1.2rem; }
+    #music-btn.on { color: #f0c040; }
+    .ctrl-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Music Player Style - Centered and Larger */
+    #bg-music {
+      position: fixed;
+      bottom: 70px; /* Higher above controls */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      width: 60vw; /* Wider for better scrubbing */
+      height: 45px;
+      opacity: 0;
+      transition: opacity 0.4s;
+      filter: invert(1) hue-rotate(180deg) brightness(1.2); /* Light theme for dark background */
+    }
+  </style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="progress-bar"></div>
+<div id="sec-dots"></div>
+
+<div id="controls">
+  <button class="ctrl-btn" id="prev-btn" title="הקודם">&#9664;</button>
+  <button class="ctrl-btn" id="play-btn" title="השהה/המשך">&#9654;</button>
+  <button class="ctrl-btn" id="next-btn" title="הבא">&#9654;&#9654;</button>
+  <span class="ctrl-sep"></span>
+  <span id="slide-counter">1 / 1</span>
+  <span class="ctrl-sep"></span>
+  <button class="ctrl-btn" id="music-btn" title="מוזיקה">&#9834;</button>
+</div>
+
+<audio id="bg-music" controls preload="auto">
+  <source src="audio/music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const PHOTO_DURATION   = 3200; 
+const SECTION_DURATION = 2500; 
+const END_DURATION     = 10000; 
+const COVER_DURATION   = 9e9;  
+
+const LOGO = "background.jpg";
+const CREDIT_IMG = "credit_img.webp";
+const RIBBON_IMG = "yellow_ribbon.png";
+
+const SECTIONS = [
+  { id: "start", title: "ההתחלה", folder: "images/start", images: ["img_000.jpg","img_001.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_007.jpg","img_008.jpg","img_009.jpg","img_010.jpg","img_011.jpg","img_012.jpg","img_013.jpg","img_014.jpg","img_015.jpg","img_016.jpg","img_017.jpg","img_018.jpg"] },
+  { id: "rallies", title: "עצרות ומשמרות", folder: "images/rallies", images: ["img_000.jpg","img_001.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_008.jpg","img_010.jpg","img_011.jpg","img_012.jpg","img_013.jpg"] },
+  { id: "marches", title: "צעדות, שיירות ומירוצים", folder: "images/marches", images: ["img_000.jpg","img_001.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_007.jpg","img_008.jpg","img_009.jpg"] },
+  { id: "displays", title: "מיצגים", folder: "images/displays", images: ["img_001.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_007.jpg","img_008.jpg","img_009.jpg","img_010.jpg","img_011.jpg","img_012.jpg","img_013.jpg","img_014.jpg","img_015.jpg","img_016.jpg","img_017.jpg","img_018.jpg","img_019.jpg","img_020.jpg","img_021.jpg","img_022.jpg","img_023.jpg","img_024.jpg"] },
+  { id: "stands", title: "דוכנים", folder: "images/stands", images: ["img_000.jpg","img_001.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg"] },
+  { id: "events", title: "אירועים מיוחדים", folder: "images/events", images: ["img_000.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_007.jpg","img_008.jpg","img_009.jpg","img_010.jpg","img_011.jpg","img_012.jpg"] },
+  { id: "end", title: "עד החטוף האחרון", folder: "images/end", images: ["img_000.jpg","img_001.jpg"] },
+  { id: "people", title: "פשוט אנשים עם לב", folder: "images/people", images: ["img_000.jpg","img_001.jpg","img_002.jpg","img_003.jpg","img_004.jpg","img_005.jpg","img_006.jpg","img_007.jpg","img_008.jpg","img_009.jpg","img_010.jpg","img_011.jpg","img_012.jpg","img_013.jpg","img_014.jpg","img_015.jpg","img_016.jpg","img_017.jpg","img_018.jpg","img_019.jpg","img_020.jpg","img_021.jpg","img_022.jpg","img_023.jpg","img_024.jpg","img_025.jpg","img_026.jpg","img_027.jpg","img_028.jpg","img_029.jpg","img_030.jpg","img_031.jpg","img_032.jpg","img_033.jpg","img_034.jpg","img_035.jpg","img_036.jpg","img_037.jpg","img_038.jpg"] }
+];
+
+// ============================================================
+// BUILD SLIDE LIST
+// ============================================================
+const slides = [];
+slides.push({ type: 'cover' });
+
+SECTIONS.forEach((sec, secIdx) => {
+  slides.push({ type: 'section-title', sec, secIdx });
+  sec.images.forEach(img => {
+    slides.push({ type: 'photo', sec, secIdx, img });
+  });
+});
+
+slides.push({ type: 'end' });
+slides.push({ type: 'credits' });
+
+// ============================================================
+// BUILD DOM
+// ============================================================
+const stage   = document.getElementById('stage');
+const secDots = document.getElementById('sec-dots');
+
+SECTIONS.forEach((sec, i) => {
+  const d = document.createElement('div');
+  d.className = 'sec-dot';
+  d.dataset.idx = i;
+  d.title = sec.title;
+  d.addEventListener('click', () => jumpToSection(i));
+  secDots.appendChild(d);
+});
+
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html) e.innerHTML = html;
+  return e;
+}
+
+function logoCorner() {
+  const img = document.createElement('img');
+  img.className = 'logo-corner';
+  img.src = LOGO;
+  img.alt = 'לוגו';
+  return img;
+}
+
+function buildSlideEl(s) {
+  let div;
+  if (s.type === 'cover') {
+    div = el('div', 'slide slide-cover', `
+      <div class="logo-wrap"><img class="logo" src="${LOGO}" alt="מטה משפחות החטופים אילת"></div>
+      <div class="subtitle">סיכום פעילות | מאז השבעה באוקטובר</div>
+      <div class="start-hint">לחץ להתחלה ▶</div>
+    `);
+  } else if (s.type === 'section-title') {
+    const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
+    div = el('div', 'slide slide-section-title', `
+      ${bg ? `<div class="sec-bg" style="background-image:url('${bg}')"></div>` : ''}
+      <div class="sec-name">${s.sec.title}</div>
+      <div class="sec-line"></div>
+    `);
+    div.appendChild(logoCorner());
+  } else if (s.type === 'photo') {
+    const src = `${s.sec.folder}/${s.img}`;
+    div = el('div', 'slide slide-photo', `
+      <div class="photo-bg" style="background-image:url('${src}')"></div>
+      <img class="photo-main" src="${src}" alt="${s.sec.title}" loading="lazy">
+      <div class="badge">${s.sec.title}</div>
+    `);
+    div.appendChild(logoCorner());
+  } else if (s.type === 'end') {
+    const bg = SECTIONS[SECTIONS.length-1].images[0];
+    const bgSrc = bg ? `${SECTIONS[SECTIONS.length-1].folder}/${bg}` : '';
+    div = el('div', 'slide slide-end', `
+      ${bgSrc ? `<div class="end-bg" style="background-image:url('${bgSrc}')"></div>` : ''}
+      <img class="ribbon-img" src="${RIBBON_IMG}" alt="סרט צהוב">
+      <div class="end-logo-wrap"><img class="end-logo" src="${LOGO}" alt="לוגו"></div>
+      <div class="end-title">עד החטוף האחרון — הביתה</div>
+      <div class="end-sub">תודה לכל מי שהיה שם, בכל רגע, בכל פעילות.<br>אילת לא שכחה ולא תשכח.</div>
+    `);
+  } else if (s.type === 'credits') {
+    div = el('div', 'slide slide-credits', `
+      <img class="credit-main-img" src="${CREDIT_IMG}" alt="החזרנו! עכשיו קמים.">
+      <div class="credits-title">תודה לצלמים:</div>
+      <div class="credits-list">
+        <span>דורון ברטי</span>
+        <span>עדנה פרידמן</span>
+        <span>ולכל המתנדבים שצילמו</span>
+      </div>
+    `);
+  }
+  return div;
+}
+
+const slideEls = slides.map(s => {
+  const el = buildSlideEl(s);
+  stage.appendChild(el);
+  return el;
+});
+
+// ============================================================
+// ENGINE
+// ============================================================
+let current  = 0;
+let playing  = false;
+let timer    = null;
+let musicOn  = false;
+let progStart = 0;
+let progDur   = COVER_DURATION;
+
+const music     = document.getElementById('bg-music');
+const progBar   = document.getElementById('progress-bar');
+const counter   = document.getElementById('slide-counter');
+const playBtn   = document.getElementById('play-btn');
+const musicBtn  = document.getElementById('music-btn');
+
+// Playlist Logic
+const playlist = ["audio/music.mp3", "audio/music2.mp3"];
+let currentTrack = 0;
+
+music.onended = function() {
+  currentTrack++;
+  if (currentTrack >= playlist.length) {
+    currentTrack = 0;
+  }
+  music.src = playlist[currentTrack];
+  music.load();
+  music.play().catch(e => console.log("Playback error:", e));
+};
+
+function getDur(idx) {
+  const s = slides[idx];
+  if (s.type === 'cover' || s.type === 'credits') return COVER_DURATION;
+  if (s.type === 'end') return END_DURATION; 
+  if (s.type === 'section-title') return SECTION_DURATION;
+  return PHOTO_DURATION;
+}
+
+function updateDots(secIdx) {
+  document.querySelectorAll('.sec-dot').forEach(d => d.classList.remove('active'));
+  if (secIdx !== undefined) {
+    const d = document.querySelector(`.sec-dot[data-idx="${secIdx}"]`);
+    if (d) d.classList.add('active');
+  }
+}
+
+function showSlide(idx) {
+  idx = Math.max(0, Math.min(idx, slides.length - 1));
+  slideEls[current].classList.remove('active');
+  current = idx;
+  slideEls[current].classList.add('active');
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  const s = slides[current];
+  updateDots(s.secIdx);
+
+  progDur   = getDur(current);
+  progStart = performance.now();
+  progBar.style.transition = 'none';
+  progBar.style.width = '0%';
+  requestAnimationFrame(() => {
+    if (progDur < COVER_DURATION) {
+      progBar.style.transition = `width ${progDur}ms linear`;
+      progBar.style.width = '100%';
+    }
+  });
+}
+
+function scheduleNext() {
+  clearTimeout(timer);
+  const dur = getDur(current);
+  if (dur < COVER_DURATION) {
+    timer = setTimeout(() => {
+      if (playing) { 
+        if (current < slides.length - 1) {
+          showSlide(current + 1); 
+          scheduleNext(); 
+        } else {
+          pause();
+        }
+      }
+    }, dur);
+  }
+}
+
+function play() { playing = true; playBtn.innerHTML = '&#9646;&#9646;'; scheduleNext(); }
+function pause() {
+  playing = false;
+  playBtn.innerHTML = '&#9654;';
+  clearTimeout(timer);
+  const elapsed = performance.now() - progStart;
+  const pct = Math.min(100, (elapsed / progDur) * 100);
+  progBar.style.transition = 'none';
+  progBar.style.width = pct + '%';
+}
+function togglePlay() { playing ? pause() : play(); }
+
+function jumpToSection(secIdx) {
+  clearTimeout(timer);
+  const idx = slides.findIndex(s => s.secIdx === secIdx && s.type === 'section-title');
+  if (idx >= 0) { showSlide(idx); if (playing) scheduleNext(); }
+}
+
+function setMusicOn(on) {
+  musicOn = on;
+  if (on) { music.play().catch(()=>{}); musicBtn.classList.add('on'); }
+  else    { music.pause(); musicBtn.classList.remove('on'); }
+}
+function toggleMusic() { setMusicOn(!musicOn); }
+
+document.getElementById('prev-btn').addEventListener('click', () => { clearTimeout(timer); showSlide(current - 1); if (playing) scheduleNext(); });
+document.getElementById('next-btn').addEventListener('click', () => { clearTimeout(timer); showSlide(current + 1); if (playing) scheduleNext(); });
+playBtn.addEventListener('click', togglePlay);
+musicBtn.addEventListener('click', toggleMusic);
+
+stage.addEventListener('click', e => {
+  if (e.target.closest('#controls') || e.target.closest('#bg-music')) return;
+  const s = slides[current];
+  if (s.type === 'cover') { setMusicOn(true); showSlide(current + 1); play(); }
+  else if (s.type === 'credits') { showSlide(0); }
+  else if (s.type === 'end') { showSlide(current + 1); if (playing) scheduleNext(); }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { clearTimeout(timer); showSlide(current - 1); if (playing) scheduleNext(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { clearTimeout(timer); showSlide(current + 1); if (playing) scheduleNext(); }
+  if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  if (e.key === 'm' || e.key === 'M') toggleMusic();
+});
+
+let hideCtrl;
+document.addEventListener('mousemove', () => {
+  const ctrl = document.getElementById('controls');
+  const player = document.getElementById('bg-music');
+  ctrl.classList.add('visible');
+  player.style.opacity = '0.9';
+  clearTimeout(hideCtrl);
+  hideCtrl = setTimeout(() => {
+    ctrl.classList.remove('visible');
+    player.style.opacity = '0';
+  }, 4000); // Show for 4 seconds
+});
+
+showSlide(0);
+</script>
+</body>
+</html>
