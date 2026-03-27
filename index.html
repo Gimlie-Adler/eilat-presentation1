@@ -457,22 +457,27 @@ function buildSlideEl(s) {
       <div class="start-hint">לחץ להתחלה ▶</div>
     `);
   } else if (s.type === 'section-title') {
+    const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
     div = el('div', 'slide slide-section-title', `
-      <div class="sec-bg"></div>
+      ${bg ? `<div class="sec-bg" style="background-image:url('${bg}')"></div>` : ''}
       <div class="sec-name">${s.sec.title}</div>
       <div class="sec-line"></div>
     `);
     div.appendChild(logoCorner());
   } else if (s.type === 'photo') {
+    const src = `${s.sec.folder}/${s.img}`;
     div = el('div', 'slide slide-photo', `
-      <div class="photo-bg"></div>
-      <img class="photo-main" src="" alt="${s.sec.title}" loading="lazy">
+      <div class="photo-bg" style="background-image:url('${src}')"></div>
+      <img class="photo-main" src="${src}" alt="${s.sec.title}" loading="eager">
       <div class="badge">${s.sec.title}</div>
     `);
     div.appendChild(logoCorner());
   } else if (s.type === 'end') {
+    const lastSec = SECTIONS[SECTIONS.length-1];
+    const bg = lastSec.images[0];
+    const bgSrc = bg ? `${lastSec.folder}/${bg}` : '';
     div = el('div', 'slide slide-end', `
-      <div class="end-bg"></div>
+      ${bgSrc ? `<div class="end-bg" style="background-image:url('${bgSrc}')"></div>` : ''}
       <img class="ribbon-img" src="${RIBBON_IMG}" alt="סרט צהוב">
       <div class="end-logo-wrap"><img class="end-logo" src="${LOGO}" alt="לוגו"></div>
       <div class="end-title">עד החטוף האחרון — הביתה</div>
@@ -544,46 +549,9 @@ function updateDots(secIdx) {
   }
 }
 
-// Memory-efficient Image Loading - Fixed Path Logic
-function loadSlideMedia(idx) {
-  if (idx < 0 || idx >= slides.length) return;
-  const s = slides[idx];
-  const el = slideEls[idx];
-  
-  if (s.type === 'section-title') {
-    const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
-    const bgDiv = el.querySelector('.sec-bg');
-    if (bgDiv && bg && !bgDiv.style.backgroundImage) {
-      bgDiv.style.backgroundImage = `url('${bg}')`;
-    }
-  } else if (s.type === 'photo') {
-    const src = `${s.sec.folder}/${s.img}`;
-    const imgMain = el.querySelector('.photo-main');
-    const bgDiv = el.querySelector('.photo-bg');
-    if (imgMain && !imgMain.src) {
-      imgMain.src = src;
-      bgDiv.style.backgroundImage = `url('${src}')`;
-    }
-  } else if (s.type === 'end') {
-    const lastSec = SECTIONS[SECTIONS.length-1];
-    const bg = lastSec.images[0];
-    const bgSrc = bg ? `${lastSec.folder}/${bg}` : '';
-    const bgDiv = el.querySelector('.end-bg');
-    if (bgDiv && bgSrc && !bgDiv.style.backgroundImage) {
-      bgDiv.style.backgroundImage = `url('${bgSrc}')`;
-    }
-  }
-}
-
 function showSlide(idx) {
   idx = Math.max(0, Math.min(idx, slides.length - 1));
   slideEls[current].classList.remove('active');
-  
-  // Load current and next 2 slides immediately
-  loadSlideMedia(idx);
-  loadSlideMedia(idx + 1);
-  loadSlideMedia(idx + 2);
-  
   current = idx;
   slideEls[current].classList.add('active');
   counter.textContent = `${current + 1} / ${slides.length}`;
@@ -677,7 +645,6 @@ document.addEventListener('mousemove', () => {
   }, 4000); 
 });
 
-// Initial load
 showSlide(0);
 </script>
 </body>
