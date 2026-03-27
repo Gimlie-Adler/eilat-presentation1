@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>מטה משפחות החטופים – אילת | סיכום פעילות</title>
   <style>
     /* ===== RESET & BASE ===== */
@@ -15,7 +15,6 @@
       overflow: hidden;
       width: 100vw;
       height: 100vh;
-      height: 100dvh;
       user-select: none;
     }
 
@@ -24,7 +23,6 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      height: 100dvh;
       overflow: hidden;
       z-index: 1;
     }
@@ -303,7 +301,6 @@
     #controls {
       position: fixed;
       bottom: 20px;
-      bottom: calc(20px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       z-index: 200;
@@ -315,15 +312,11 @@
       border-radius: 40px;
       padding: 8px 22px;
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      opacity: 1;
+      opacity: 0;
       transition: opacity 0.4s;
       direction: ltr;
     }
-    @media (hover: hover) {
-      #controls { opacity: 0; }
-      #controls:hover, #controls.visible { opacity: 1; }
-    }
+    #controls:hover, #controls.visible { opacity: 1; }
     .ctrl-btn {
       background: none;
       border: none;
@@ -350,18 +343,18 @@
       background: rgba(255,255,255,0.2);
     }
 
+    /* Music Player Style - Centered and Larger */
     #bg-music {
       position: fixed;
-      bottom: 70px;
-      bottom: calc(70px + env(safe-area-inset-bottom));
+      bottom: 70px; /* Higher above controls */
       left: 50%;
       transform: translateX(-50%);
       z-index: 9999;
-      width: 60vw;
+      width: 60vw; /* Wider for better scrubbing */
       height: 45px;
       opacity: 0;
       transition: opacity 0.4s;
-      filter: invert(1) hue-rotate(180deg) brightness(1.2);
+      filter: invert(1) hue-rotate(180deg) brightness(1.2); /* Light theme for dark background */
     }
   </style>
 </head>
@@ -464,26 +457,22 @@ function buildSlideEl(s) {
       <div class="start-hint">לחץ להתחלה ▶</div>
     `);
   } else if (s.type === 'section-title') {
-    const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
     div = el('div', 'slide slide-section-title', `
-      ${bg ? `<div class="sec-bg" style="background-image:url('${bg}')"></div>` : ''}
+      <div class="sec-bg"></div>
       <div class="sec-name">${s.sec.title}</div>
       <div class="sec-line"></div>
     `);
     div.appendChild(logoCorner());
   } else if (s.type === 'photo') {
-    const src = `${s.sec.folder}/${s.img}`;
     div = el('div', 'slide slide-photo', `
-      <div class="photo-bg" style="background-image:url('${src}')"></div>
-      <img class="photo-main" src="${src}" alt="${s.sec.title}" loading="lazy">
+      <div class="photo-bg"></div>
+      <img class="photo-main" src="" alt="${s.sec.title}" loading="lazy">
       <div class="badge">${s.sec.title}</div>
     `);
     div.appendChild(logoCorner());
   } else if (s.type === 'end') {
-    const bg = SECTIONS[SECTIONS.length-1].images[0];
-    const bgSrc = bg ? `${SECTIONS[SECTIONS.length-1].folder}/${bg}` : '';
     div = el('div', 'slide slide-end', `
-      ${bgSrc ? `<div class="end-bg" style="background-image:url('${bgSrc}')"></div>` : ''}
+      <div class="end-bg"></div>
       <img class="ribbon-img" src="${RIBBON_IMG}" alt="סרט צהוב">
       <div class="end-logo-wrap"><img class="end-logo" src="${LOGO}" alt="לוגו"></div>
       <div class="end-title">עד החטוף האחרון — הביתה</div>
@@ -555,9 +544,44 @@ function updateDots(secIdx) {
   }
 }
 
+// Memory-efficient Image Loading
+function loadSlideMedia(idx) {
+  const s = slides[idx];
+  const el = slideEls[idx];
+  
+  if (s.type === 'section-title') {
+    const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
+    const bgDiv = el.querySelector('.sec-bg');
+    if (bgDiv && !bgDiv.style.backgroundImage) {
+      bgDiv.style.backgroundImage = `url('${bg}')`;
+    }
+  } else if (s.type === 'photo') {
+    const src = `${s.sec.folder}/${s.img}`;
+    const imgMain = el.querySelector('.photo-main');
+    const bgDiv = el.querySelector('.photo-bg');
+    if (imgMain && !imgMain.src) {
+      imgMain.src = src;
+      bgDiv.style.backgroundImage = `url('${src}')`;
+    }
+  } else if (s.type === 'end') {
+    const bg = SECTIONS[SECTIONS.length-1].images[0];
+    const bgSrc = bg ? `${SECTIONS[SECTIONS.length-1].folder}/${bg}` : '';
+    const bgDiv = el.querySelector('.end-bg');
+    if (bgDiv && !bgDiv.style.backgroundImage) {
+      bgDiv.style.backgroundImage = `url('${bgSrc}')`;
+    }
+  }
+}
+
 function showSlide(idx) {
   idx = Math.max(0, Math.min(idx, slides.length - 1));
   slideEls[current].classList.remove('active');
+  
+  // Load current and next 2 slides
+  loadSlideMedia(idx);
+  if (idx + 1 < slides.length) loadSlideMedia(idx + 1);
+  if (idx + 2 < slides.length) loadSlideMedia(idx + 2);
+  
   current = idx;
   slideEls[current].classList.add('active');
   counter.textContent = `${current + 1} / ${slides.length}`;
@@ -639,7 +663,7 @@ document.addEventListener('keydown', e => {
 });
 
 let hideCtrl;
-function showControls() {
+document.addEventListener('mousemove', () => {
   const ctrl = document.getElementById('controls');
   const player = document.getElementById('bg-music');
   ctrl.classList.add('visible');
@@ -648,10 +672,8 @@ function showControls() {
   hideCtrl = setTimeout(() => {
     ctrl.classList.remove('visible');
     player.style.opacity = '0';
-  }, 4000);
-}
-document.addEventListener('mousemove', showControls);
-document.addEventListener('touchstart', showControls, { passive: true });
+  }, 4000); 
+});
 
 showSlide(0);
 </script>
