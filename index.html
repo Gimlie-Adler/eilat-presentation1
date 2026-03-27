@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>מטה משפחות החטופים – אילת | סיכום פעילות</title>
   <style>
     /* ===== RESET & BASE ===== */
@@ -15,6 +15,7 @@
       overflow: hidden;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       user-select: none;
     }
 
@@ -23,6 +24,7 @@
       position: relative;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       z-index: 1;
     }
@@ -301,6 +303,7 @@
     #controls {
       position: fixed;
       bottom: 20px;
+      bottom: calc(20px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       z-index: 200;
@@ -312,11 +315,15 @@
       border-radius: 40px;
       padding: 8px 22px;
       backdrop-filter: blur(16px);
-      opacity: 0;
+      -webkit-backdrop-filter: blur(16px);
+      opacity: 1;
       transition: opacity 0.4s;
       direction: ltr;
     }
-    #controls:hover, #controls.visible { opacity: 1; }
+    @media (hover: hover) {
+      #controls { opacity: 0; }
+      #controls:hover, #controls.visible { opacity: 1; }
+    }
     .ctrl-btn {
       background: none;
       border: none;
@@ -343,18 +350,18 @@
       background: rgba(255,255,255,0.2);
     }
 
-    /* Music Player Style - Centered and Larger */
     #bg-music {
       position: fixed;
-      bottom: 70px; /* Higher above controls */
+      bottom: 70px;
+      bottom: calc(70px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       z-index: 9999;
-      width: 60vw; /* Wider for better scrubbing */
+      width: 60vw;
       height: 45px;
       opacity: 0;
       transition: opacity 0.4s;
-      filter: invert(1) hue-rotate(180deg) brightness(1.2); /* Light theme for dark background */
+      filter: invert(1) hue-rotate(180deg) brightness(1.2);
     }
   </style>
 </head>
@@ -468,14 +475,13 @@ function buildSlideEl(s) {
     const src = `${s.sec.folder}/${s.img}`;
     div = el('div', 'slide slide-photo', `
       <div class="photo-bg" style="background-image:url('${src}')"></div>
-      <img class="photo-main" src="${src}" alt="${s.sec.title}" loading="eager">
+      <img class="photo-main" src="${src}" alt="${s.sec.title}" loading="lazy">
       <div class="badge">${s.sec.title}</div>
     `);
     div.appendChild(logoCorner());
   } else if (s.type === 'end') {
-    const lastSec = SECTIONS[SECTIONS.length-1];
-    const bg = lastSec.images[0];
-    const bgSrc = bg ? `${lastSec.folder}/${bg}` : '';
+    const bg = SECTIONS[SECTIONS.length-1].images[0];
+    const bgSrc = bg ? `${SECTIONS[SECTIONS.length-1].folder}/${bg}` : '';
     div = el('div', 'slide slide-end', `
       ${bgSrc ? `<div class="end-bg" style="background-image:url('${bgSrc}')"></div>` : ''}
       <img class="ribbon-img" src="${RIBBON_IMG}" alt="סרט צהוב">
@@ -633,7 +639,7 @@ document.addEventListener('keydown', e => {
 });
 
 let hideCtrl;
-document.addEventListener('mousemove', () => {
+function showControls() {
   const ctrl = document.getElementById('controls');
   const player = document.getElementById('bg-music');
   ctrl.classList.add('visible');
@@ -642,8 +648,10 @@ document.addEventListener('mousemove', () => {
   hideCtrl = setTimeout(() => {
     ctrl.classList.remove('visible');
     player.style.opacity = '0';
-  }, 4000); 
-});
+  }, 4000);
+}
+document.addEventListener('mousemove', showControls);
+document.addEventListener('touchstart', showControls, { passive: true });
 
 showSlide(0);
 </script>
