@@ -544,15 +544,16 @@ function updateDots(secIdx) {
   }
 }
 
-// Memory-efficient Image Loading
+// Memory-efficient Image Loading - Fixed Path Logic
 function loadSlideMedia(idx) {
+  if (idx < 0 || idx >= slides.length) return;
   const s = slides[idx];
   const el = slideEls[idx];
   
   if (s.type === 'section-title') {
     const bg = s.sec.images[0] ? `${s.sec.folder}/${s.sec.images[0]}` : '';
     const bgDiv = el.querySelector('.sec-bg');
-    if (bgDiv && !bgDiv.style.backgroundImage) {
+    if (bgDiv && bg && !bgDiv.style.backgroundImage) {
       bgDiv.style.backgroundImage = `url('${bg}')`;
     }
   } else if (s.type === 'photo') {
@@ -564,10 +565,11 @@ function loadSlideMedia(idx) {
       bgDiv.style.backgroundImage = `url('${src}')`;
     }
   } else if (s.type === 'end') {
-    const bg = SECTIONS[SECTIONS.length-1].images[0];
-    const bgSrc = bg ? `${SECTIONS[SECTIONS.length-1].folder}/${bg}` : '';
+    const lastSec = SECTIONS[SECTIONS.length-1];
+    const bg = lastSec.images[0];
+    const bgSrc = bg ? `${lastSec.folder}/${bg}` : '';
     const bgDiv = el.querySelector('.end-bg');
-    if (bgDiv && !bgDiv.style.backgroundImage) {
+    if (bgDiv && bgSrc && !bgDiv.style.backgroundImage) {
       bgDiv.style.backgroundImage = `url('${bgSrc}')`;
     }
   }
@@ -577,10 +579,10 @@ function showSlide(idx) {
   idx = Math.max(0, Math.min(idx, slides.length - 1));
   slideEls[current].classList.remove('active');
   
-  // Load current and next 2 slides
+  // Load current and next 2 slides immediately
   loadSlideMedia(idx);
-  if (idx + 1 < slides.length) loadSlideMedia(idx + 1);
-  if (idx + 2 < slides.length) loadSlideMedia(idx + 2);
+  loadSlideMedia(idx + 1);
+  loadSlideMedia(idx + 2);
   
   current = idx;
   slideEls[current].classList.add('active');
@@ -675,6 +677,7 @@ document.addEventListener('mousemove', () => {
   }, 4000); 
 });
 
+// Initial load
 showSlide(0);
 </script>
 </body>
